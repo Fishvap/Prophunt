@@ -1,4 +1,4 @@
-﻿using Sandbox;
+using Sandbox;
 using System;
 using System.ComponentModel;
 using System.Linq;
@@ -140,11 +140,7 @@ partial class Player : AnimatedEntity
 
 	public BBox Hull
 	{
-		get => new
-		(
-			new Vector3( -16, -16, 0 ),
-			new Vector3( 16, 16, 72 )
-		);
+		get => new BBox( new Vector3( -16, -16, 0 ), new Vector3( 16, 16, 72 ) );
 	}
 
 	public override Ray AimRay => new Ray( EyePosition, EyeRotation.Forward );
@@ -267,6 +263,27 @@ partial class Player : AnimatedEntity
 		{
 			if ( i.Enabled ) i.Simulate( cl );
 		}
+	}
+
+	private void ChangeProp(Prop prop)
+	{
+		if ( prop == null ) return;
+		if ( GetModelName() == prop.GetModelName() )
+		{
+			if ( Scale != prop.Scale )
+			{
+				Scale = prop.Scale;
+			}
+			if ( RenderColor != prop.RenderColor )
+			{
+				RenderColor = prop.RenderColor;
+			}
+			return;
+		}
+		SetModel( prop.GetModelName() );
+        SetupPhysicsFromAABB( PhysicsMotionType.Keyframed, Hull.Mins, Hull.Maxs );
+		Clothing.ClearEntities();
+		AnimationController = null;
 	}
 
 	/// <summary>
